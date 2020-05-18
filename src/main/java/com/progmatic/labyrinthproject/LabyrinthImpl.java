@@ -64,7 +64,7 @@ public class LabyrinthImpl implements Labyrinth {
                         default:
                             type = CellType.EMPTY;
                     }
-                    setCellType(new Coordinate(hh,ww),type);
+                    setCellType(new Coordinate(ww,hh),type);
                 }
             }
         } catch (FileNotFoundException | NumberFormatException ex) {
@@ -120,7 +120,7 @@ public class LabyrinthImpl implements Labyrinth {
                 //North
                 if (i == 0){
                     cell = getCellType(new Coordinate(playerPosition.getCol(),playerPosition.getRow() - 1));
-                    if (cell.equals(CellType.EMPTY)) {
+                    if (cell.equals(CellType.EMPTY) || cell.equals(CellType.START) || cell.equals(CellType.END) ) {
                         possibleMovesList.add(Direction.NORTH);
                     }
                 }
@@ -128,14 +128,14 @@ public class LabyrinthImpl implements Labyrinth {
                 // South
                 if (i == 1) {
                     cell = getCellType(new Coordinate(playerPosition.getCol(), playerPosition.getRow() + 1));
-                    if (cell.equals(CellType.EMPTY)) {
+                    if (cell.equals(CellType.EMPTY) || cell.equals(CellType.START) || cell.equals(CellType.END)) {
                         possibleMovesList.add(Direction.SOUTH);
                     }
                 }
                 // East
                 if (i == 2) {
                     cell = getCellType(new Coordinate(playerPosition.getCol() + 1, playerPosition.getRow()));
-                    if (cell.equals(CellType.EMPTY)) {
+                    if (cell.equals(CellType.EMPTY) || cell.equals(CellType.START) || cell.equals(CellType.END)) {
                         possibleMovesList.add(Direction.EAST);
                     }
                 }
@@ -143,7 +143,7 @@ public class LabyrinthImpl implements Labyrinth {
                 // West
                 if (i == 3) {
                     cell = getCellType(new Coordinate(playerPosition.getCol() - 1, playerPosition.getRow()));
-                    if (cell.equals(CellType.EMPTY)) {
+                    if (cell.equals(CellType.EMPTY) || cell.equals(CellType.START) || cell.equals(CellType.END)) {
                         possibleMovesList.add(Direction.WEST);
                     }
                 }
@@ -157,7 +157,25 @@ public class LabyrinthImpl implements Labyrinth {
 
     @Override
     public void movePlayer(Direction direction) throws InvalidMoveException {
-        
+        List<Direction> possibleMoves = possibleMoves();
+        if (!possibleMoves.contains(direction)) {
+            throw new InvalidMoveException(direction);
+        }
+
+        switch (direction) {
+            case EAST:
+                playerPosition = new Coordinate(playerPosition.getCol() + 1,playerPosition.getRow());
+                break;
+            case NORTH:
+                playerPosition = new Coordinate(playerPosition.getCol(),playerPosition.getRow() - 1);
+                break;
+            case WEST:
+                playerPosition = new Coordinate(playerPosition.getCol() - 1,playerPosition.getRow());
+                break;
+            case SOUTH:
+                playerPosition = new Coordinate(playerPosition.getCol(),playerPosition.getRow() + 1);
+                break;
+        }
     }
 
     private void checkBounds(Coordinate c) throws  CellException{
